@@ -5,14 +5,15 @@ A lightweight HTTP server integrated as a plugin within CATIA Magic / Cameo Syst
 ## Capabilities
 
 ### Current Version (v1.0.0)
-- **Request Logging**: All incoming HTTP requests are captured and logged directly to the Cameo notification window (GUI Log).
-- **Lightweight Footprint**: Built using the standard JDK HTTP server to minimize external dependencies and overhead.
+- **Dynamic Endpoint Handling**: Request handlers can be defined in Groovy scripts, allowing for logic updates without restarting Cameo.
+- **Hot Reloading**: Groovy scripts are monitored for changes and reloaded automatically on the next request.
+- **Request Logging**: Built-in capability to log requests and script output directly to the Cameo notification window (GUI Log).
 - **Configurable Port**: The server port can be adjusted via the system property `cameo.http.server.port` (defaults to `18741`).
+- **Configurable Scripts Directory**: The location of Groovy scripts can be adjusted via the system property `cameo.http.server.scripts.dir`. Defaults to the `scripts/` subdirectory of the plugin installation.
 
 ### Planned Capabilities
-- **Dynamic Endpoint Handling**: Ability to define request handlers in Groovy scripts.
-- **Hot Reloading**: Dynamic loading/reloading of Groovy scripts without requiring a Cameo restart.
-- **Cameo API Integration**: Providing a streamlined interface for Groovy scripts to interact with the Cameo OpenAPI and EMF model.
+- **Annotated Routing**: Ability to define multiple endpoints within a single script using annotations.
+- **Advanced Routing**: Support for partial URL matching and complex routing rules.
 
 ## Internal Architecture
 
@@ -31,21 +32,22 @@ The plugin follows a layered architecture to decouple the Cameo plugin lifecycle
 
 3.  **Handler Layer (`HttpHandler` implementations)**:
     - Implements the `com.sun.net.httpserver.HttpHandler` interface.
-    - Contains the business logic for specific endpoints.
-    - Currently includes `LogRequestHandler` for basic logging.
+    - **`DynamicScriptHandler`**: The primary handler that maps URI paths to Groovy scripts and executes them.
+    - **`ScriptHandler`**: An interface that Groovy scripts must implement to handle HTTP exchanges.
 
 ### Data Flow
-`HTTP Request` $\rightarrow$ `HttpServer` $\rightarrow$ `HttpHandler` $\rightarrow$ `Cameo GUI Log`
+`HTTP Request` $\rightarrow$ `HttpServer` $\rightarrow$ `DynamicScriptHandler` $\rightarrow$ `Groovy Script` $\rightarrow$ `Cameo API / GUI Log`
 
 ## Main Functions & Interfaces
 
 ### Core Classes
 - `CameoHttpServerPlugin`: The entry point for Cameo. Responsible for bootstrapping the server.
 - `CameoHttpServer`: The engine that maintains the HTTP listener and maps URIs to handlers.
-- `LogRequestHandler`: A specific implementation of `HttpHandler` that transforms an `HttpExchange` into a GUI log message.
+- `DynamicScriptHandler`: Manages the loading, caching, and hot-reloading of Groovy scripts.
 
 ### Key Interfaces
 - `com.sun.net.httpserver.HttpHandler`: The primary interface used to define endpoint behavior.
+- `com.haarer.httpserver.handlers.ScriptHandler`: The interface required for dynamic Groovy endpoints.
 - `com.nomagic.magicdraw.plugins.Plugin`: The interface required for integration with the Cameo plugin architecture.
 
 ## Architecture Decisions
@@ -57,7 +59,7 @@ The plugin follows a layered architecture to decouple the Cameo plugin lifecycle
 - **Performance**: Sufficient for the intended low-latency, lightweight signaling and model manipulation tasks.
 - **Simplicity**: Eases deployment and build process.
 
-### 2. Dynamic Groovy Endpoints (Planned)
+### 2. Dynamic Groovy Endpoints
 **Decision**: Implement a mechanism to load endpoint logic from external `.groovy` files.
 **Reasoning**: 
 - **Fast Iteration**: Developing against the Cameo API typically requires frequent restarts of a large application. Groovy allows for "hot-swapping" logic.
@@ -74,6 +76,7 @@ The project uses Gradle for building.
 To develop and build this plugin, the following tools are required:
 - **OpenJDK 21**: The project is built for and targets Java 21.
 - **Gradle**: Used for dependency management and plugin assembly.
+- **Cameo Automaton Plugin**: Required at runtime to provide the Groovy script engine.
 
 On Alpine Linux, these can be installed via:
 `apk add openjdk21 gradle`

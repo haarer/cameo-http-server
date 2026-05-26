@@ -7,6 +7,7 @@
     class="com.haarer.httpserver.CameoHttpServerPlugin">
     <requires>
         <api version="1.0"/>
+        <required-plugin id="AutomatonPlugin" name="Automaton" version="2026x"/>
     </requires>
     <runtime>
         <library name="cameo-http-server-1.0.0.jar"/>

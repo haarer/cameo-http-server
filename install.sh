@@ -18,5 +18,10 @@ mkdir -p "$TARGET_DIR"
 echo "Deploying files to $TARGET_DIR..."
 cp -r "$BUILD_DIST"/* "$TARGET_DIR/"
 
+# 4. Copy scripts
+echo "Deploying scripts to $TARGET_DIR/scripts..."
+mkdir -p "$TARGET_DIR/scripts"
+cp -r scripts/* "$TARGET_DIR/scripts/"
+
 echo "Installation successful!"
 echo "Please restart Cameo to load the plugin."
