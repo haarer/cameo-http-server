@@ -1,0 +1,9 @@
+[project]
+name = "cameo-http-server-tests"
+version = "0.1.0"
+description = "Test suite for the Cameo HTTP Server plugin"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.27",
+    "pytest>=8",
+]

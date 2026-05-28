@@ -4,7 +4,7 @@ plugins {
 
 def cameoHome = project.hasProperty('cameoHome')
     ? project.property('cameoHome')
-    : '/workspace/MSOSA2026xHF1'
+    : '/workspace/MSOSA2026xHF2'
 
 def jdk21Home = project.hasProperty('jdk21Home')
     ? project.property('jdk21Home')

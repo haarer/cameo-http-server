@@ -1,7 +1,6 @@
 package com.haarer.httpserver;
 
-import com.haarer.httpserver.handlers.DynamicScriptHandler;
-import com.haarer.httpserver.handlers.LogRequestHandler;
+import com.haarer.httpserver.handlers.AnnotatedScriptHandler;
 import com.sun.net.httpserver.HttpServer;
 import java.io.File;
 import java.io.IOException;
@@ -41,9 +40,7 @@ public class CameoHttpServer {
     }
 
     private void registerHandlers() {
-        // Log requests at root for debugging, but let the DynamicScriptHandler handle specific paths
-        // For this iteration, we'll use DynamicScriptHandler for everything to support the script logic
-        server.createContext("/", new DynamicScriptHandler(scriptsDir));
+        server.createContext("/", new AnnotatedScriptHandler(scriptsDir));
     }
 
     public void start() {
